@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { startCase } from "lodash";
 
-import TablePagination from "@/components/Table/table-pagination";
+import TablePagination from "@/components/table/table-pagination";
 import LoadingSpinner from "@/components/UI/loading-spinner";
 import { useUsers } from "@/hooks/users";
 import { useUpdateUserRole } from "@/hooks/users";

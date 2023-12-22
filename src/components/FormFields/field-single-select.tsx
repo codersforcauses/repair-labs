@@ -45,7 +45,7 @@ export default function FieldSingleSelect<T extends FieldValues = FieldValues>({
   ...props
 }: FormProps<T>) {
   const { field, fieldState } = useController(props);
-  const [displayText, setDisplayText] = useState(field.value.toString());
+  const [displayText, setDisplayText] = useState(field.value?.toString());
 
   const baseStyle = `flex ${height} ${width} justify-between overflow-hidden rounded-lg bg-white px-3 py-2.5 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset hover:shadow-grey-300`;
   const normalBorderStyle = `ring-grey-300`;

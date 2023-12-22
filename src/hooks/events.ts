@@ -47,7 +47,7 @@ export const useEvents = (
     return response.data;
   };
 
-  return useQuery({
+  return useQuery<EventResponse[]>({
     queryKey: ["events", sortKey, sortMethod, searchWord],
     queryFn
   });

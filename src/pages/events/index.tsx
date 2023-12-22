@@ -9,18 +9,22 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventStatus } from "@prisma/client";
+import { getCoreRowModel } from "@tanstack/react-table";
 import { SubmitHandler } from "react-hook-form";
 
 import EventFormEditButton from "@/components/Button/event-form-edit-button";
 import EventForm from "@/components/Forms/event-form";
 import Modal from "@/components/Modal";
 import ProfilePopover from "@/components/ProfilePopover";
+import FilterGroup from "@/components/table/filter-group";
+import Search from "@/components/table/search";
+import Table from "@/components/table/table";
 import { useAuth } from "@/hooks/auth";
 import { useCreateEvent, useEvents } from "@/hooks/events";
 import { useItemTypes } from "@/hooks/item-types";
 import { CreateEvent, Event, EventResponse } from "@/types";
 
-function Table() {
+function EventTable() {
   const router = useRouter();
 
   const upcoming: EventStatus = "UPCOMING";
@@ -259,8 +263,73 @@ function Table() {
           )}
         </div>
       </div>
+
+      <div>
+        <div className="w-full flex">
+          <FilterGroup
+            filters={[
+              {
+                title: "Type",
+                name: "Type",
+                options: [
+                  { id: "All", text: "all" },
+                  { id: "test", text: "test" }
+                ]
+              }
+            ]}
+          />
+          <Search
+            className="relative w-5/12 p-4"
+            value={searchWord}
+            onChange={setSearchWord}
+            afterInput={
+              <button
+                className="absolute right-8 top-2/4 -translate-y-2/4 transform cursor-pointer text-gray-500"
+                onClick={() => {
+                  // Handle search submit action here
+                  console.log("Search submitted");
+                }}
+              >
+                <FontAwesomeIcon icon={faSearch} />
+              </button>
+            }
+          />
+          <div className=" p-4 text-center">
+            <button
+              className="h-10 w-10 rounded-full bg-gray-200 text-gray-500 focus:shadow-md"
+              onClick={() => setShowAddModal(true)}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+            <Modal
+              setShowPopup={setShowAddModal}
+              showModal={showAddModal}
+              height="h-3/4"
+            >
+              <EventForm itemTypes={itemTypes} onSubmit={submitCreateEvent} />
+            </Modal>
+          </div>
+        </div>
+        <Table
+          data={eventData}
+          getCoreRowModel={getCoreRowModel()}
+          columns={[
+            { accessorKey: "name", header: "Event Name" },
+            { accessorKey: "createdBy", header: "Created By" },
+            { accessorKey: "location", header: "Location" },
+            { accessorKey: "startDate", header: "Date" },
+            { accessorKey: "eventType", header: "Type" },
+            { accessorKey: "status", header: "Status" },
+            {
+              header: "Edit",
+              cell: (info) => <EventFormEditButton props={info.row.original} />
+            }
+          ]}
+        />
+        {/* <Pagination /> */}
+      </div>
     </div>
   );
 }
 
-export default Table;
+export default EventTable;

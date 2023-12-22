@@ -41,6 +41,7 @@
     "@headlessui/react": "^1.7.17",
     "@prisma/client": "^5.5.2",
     "@react-email/render": "^0.0.9",
+    "@tanstack/react-table": "^8.11.0",
     "axios": "^1.4.0",
     "lodash": "^4.17.21",
     "next": "^14.0.2",
