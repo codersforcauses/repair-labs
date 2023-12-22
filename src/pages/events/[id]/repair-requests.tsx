@@ -50,17 +50,7 @@ export default function RepairRequests() {
               <div className="container mx-auto items-center">
                 <div className="flex justify-between">
                   <div className="w-auto p-4 text-2xl font-bold text-zinc-400">
-                    <span>
-                      Repair Requests (
-                      {!repairRequests ? (
-                        <div className="w-full h-full flex items-center justify-center ">
-                          <LoadingSpinner />
-                        </div>
-                      ) : (
-                        repairRequests.length
-                      )}
-                      )
-                    </span>
+                    <span>Repair Requests ({repairRequests?.length})</span>
                   </div>
                   <div className="flex justify-end items-center">
                     <SortBy />
@@ -80,11 +70,9 @@ export default function RepairRequests() {
                   </div>
                 </div>
               </div>
-              <div className="grid gap-4 p-4 sm:grid-rows-2 md:grid-rows-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
+              <div className="grid gap-4 p-4 sm:grid-rows-2 md:grid-rows-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 relative">
                 {!repairRequests ? (
-                  <div className="w-full h-full flex items-center justify-center ">
-                    <LoadingSpinner />
-                  </div>
+                  <LoadingSpinner className="w-full h-full flex items-center justify-center absolute" />
                 ) : (
                   repairRequests.map((item: RepairRequestResponse) => (
                     <div key={item.id}>
@@ -120,9 +108,7 @@ export default function RepairRequests() {
             </div>
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center ">
-            <LoadingSpinner />
-          </div>
+          <LoadingSpinner className="w-full h-full flex items-center justify-center" />
         )}
       </main>
     </Sidebar>

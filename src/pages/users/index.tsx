@@ -56,7 +56,7 @@ const User = () => {
 
       {/* Table */}
       {isLoading ? (
-        <LoadingSpinner />
+        <LoadingSpinner className="flex items-center justify-center m-16" />
       ) : (
         <>
           <div className="relative overflow-x-auto p-10 shadow-md sm:rounded-lg">

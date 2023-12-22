@@ -76,6 +76,16 @@ module.exports = {
           900: "#2b494e",
           950: "#182f34"
         }
+      },
+      animation: {
+        "reverse-spin": "reverse-spin 1s linear infinite"
+      },
+      keyframes: {
+        "reverse-spin": {
+          from: {
+            transform: "rotate(360deg)"
+          }
+        }
       }
     },
     plugins: [require("tailwind-scrollbar")]
