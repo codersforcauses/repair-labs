@@ -20,10 +20,7 @@ async function getEvent(
   const { id } = req.query;
 
   const event = await prisma.event.findUnique({
-    where: { id: id as string },
-    include: {
-      eventRepairer: true
-    }
+    where: { id: id as string }
   });
 
   if (!event) {

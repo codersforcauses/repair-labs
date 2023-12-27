@@ -12,9 +12,9 @@ const toClientResponse = async (events: Event[]): Promise<EventResponse[]> => {
       ...e,
       createdBy: userMap[e.createdBy] ?? userService.unknownUser(e.createdBy),
       startDate: e.startDate.toISOString(),
-      endDate: e.startDate.toISOString(),
-      createdAt: e.startDate.toISOString(),
-      updatedAt: e.startDate.toISOString()
+      endDate: e.endDate.toISOString(),
+      createdAt: e.createdAt.toISOString(),
+      updatedAt: e.updatedAt.toISOString()
     };
   });
   return responses;

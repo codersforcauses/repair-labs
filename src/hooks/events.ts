@@ -1,6 +1,7 @@
 import { toast } from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
+import { DateFilterData } from "@/hooks/filters";
 import { httpClient } from "@/lib/base-http-client";
 import {
   CreateEvent,
@@ -32,14 +33,28 @@ export const useEvent = (eventId: string | undefined) => {
 export const useEvents = (
   sortKey: string,
   sortMethod: string,
-  searchWord: string
+  searchWord: string,
+  startDateRange?: DateFilterData,
+  eventType?: string[],
+  eventStatus?: string[],
+  createdBy?: string[]
 ) => {
   const queryFn = async () => {
     const params = new URLSearchParams({
       sortKey,
       sortMethod,
-      searchWord
+      searchWord,
+      ...(startDateRange?.minDate && { minStartDate: startDateRange.minDate }),
+      ...(startDateRange?.maxDate && { maxStartDate: startDateRange.maxDate })
     });
+    // include the param even if empty array so that the API knows to return nothing (for UX)
+    const negativeSearch = (paramName: string, values?: string[]) => {
+      if (values?.length == 0) values = [""];
+      values?.forEach((v) => params.append(paramName, v));
+    };
+    negativeSearch("eventStatus", eventStatus);
+    negativeSearch("eventType", eventType);
+    createdBy?.forEach((v) => params.append("createdBy", v));
 
     const url = `/event?${params.toString()}`;
 
@@ -48,7 +63,16 @@ export const useEvents = (
   };
 
   return useQuery({
-    queryKey: ["events", sortKey, sortMethod, searchWord],
+    queryKey: [
+      "events",
+      sortKey,
+      sortMethod,
+      searchWord,
+      startDateRange,
+      eventType,
+      eventStatus,
+      createdBy
+    ],
     queryFn
   });
 };

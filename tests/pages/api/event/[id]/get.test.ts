@@ -56,14 +56,13 @@ describe("GET /api/event/:id", () => {
             role: "CLIENT",
             emailAddress: "test@gmail.com"
           },
-          createdAt: "2023-11-16T01:27:08.417Z",
-          updatedAt: "2023-11-16T01:27:08.417Z",
           name: "Laptop Repair Event",
           location: "Curtin University",
           description: "Laptop repair event.",
+          eventType: "Laptop",
           disclaimer: "This is a disclaimer",
           startDate: "2023-11-16T01:27:08.417Z",
-          endDate: "2023-11-16T01:27:08.417Z",
+          endDate: "2023-11-17T01:27:08.417Z",
           status: "UPCOMING"
         };
 

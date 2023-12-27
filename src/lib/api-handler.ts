@@ -4,6 +4,8 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "next/dist/server/api-utils";
 import { ZodError } from "zod";
 
+import { ErrorResponse } from "@/types";
+
 /**
  * Wrapper for the base Next.js API handler to provide default error handling.
  * @param handler Object containing HTTP methods and its handler.
@@ -32,7 +34,7 @@ export default function apiHandler(
   };
 }
 
-function errorHandler(err: unknown, res: NextApiResponse) {
+function errorHandler(err: unknown, res: NextApiResponse<ErrorResponse>) {
   if (err instanceof ZodError) {
     return res.status(400).json({ message: err.errors });
   }

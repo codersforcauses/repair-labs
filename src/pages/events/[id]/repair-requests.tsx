@@ -50,21 +50,11 @@ export default function RepairRequests() {
               <div className="container mx-auto items-center">
                 <div className="flex justify-between">
                   <div className="w-auto p-4 text-2xl font-bold text-zinc-400">
-                    <span>
-                      Repair Requests (
-                      {!repairRequests ? (
-                        <div className="w-full h-full flex items-center justify-center ">
-                          <LoadingSpinner />
-                        </div>
-                      ) : (
-                        repairRequests.length
-                      )}
-                      )
-                    </span>
+                    <span>Repair Requests ({repairRequests?.length})</span>
                   </div>
                   <div className="flex justify-end items-center">
                     <SortBy />
-                    <SearchBar />
+                    <SearchBar className="sd:w-auto m-4" />
                     <div
                       className="flex items-center rounded-full bg-primary-500 transition hover:-translate-y-1 hover:cursor-pointer hover:bg-primary-400 w-10 h-10"
                       role="presentation"
@@ -80,9 +70,9 @@ export default function RepairRequests() {
                   </div>
                 </div>
               </div>
-              <div className="grid gap-4 p-4 sm:grid-rows-2 md:grid-rows-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
+              <div className="relative grid gap-4 p-4 sm:grid-rows-2 md:grid-rows-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
                 {!repairRequests ? (
-                  <div className="w-full h-full flex items-center justify-center ">
+                  <div className="w-full h-full flex items-center justify-center absolute">
                     <LoadingSpinner />
                   </div>
                 ) : (

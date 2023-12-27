@@ -1,31 +1,37 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   faChevronDown,
+  faChevronRight,
   faChevronUp,
-  faPlus,
-  faSearch
+  faFilter,
+  faFilterCircleXmark,
+  faPlus
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventStatus } from "@prisma/client";
 import { SubmitHandler } from "react-hook-form";
 
 import EventFormEditButton from "@/components/Button/event-form-edit-button";
+import HoverOpacityButton from "@/components/Button/hover-opacity-button";
 import EventForm from "@/components/Forms/event-form";
 import Modal from "@/components/Modal";
 import ProfilePopover from "@/components/ProfilePopover";
-import { useAuth } from "@/hooks/auth";
+import SearchBar, { SearchBarRef } from "@/components/Search/SearchBar";
+import {
+  DateRangeFilter,
+  OptionFilter,
+  UserFilter
+} from "@/components/Table/filters";
+import LoadingSpinner from "@/components/UI/loading-spinner";
 import { useCreateEvent, useEvents } from "@/hooks/events";
-import { useItemTypes } from "@/hooks/item-types";
-import { CreateEvent, Event, EventResponse } from "@/types";
+import { FilterType, useTableFilters } from "@/hooks/filters";
+import { ItemType, useItemTypes } from "@/hooks/item-types";
+import { CreateEvent, EventResponse } from "@/types";
 
 function Table() {
   const router = useRouter();
-
-  const upcoming: EventStatus = "UPCOMING";
-  const ongoing: EventStatus = "ONGOING";
-  const completed: EventStatus = "COMPLETED";
 
   function formatDate(dateString: string): string {
     const actualDate = new Date(dateString);
@@ -35,73 +41,80 @@ function Table() {
 
     return `${day}/${month}/${year}`;
   }
+  const { mutate: createEvent } = useCreateEvent();
 
+  const { data: itemTypes, isLoading: isItemTypesLoading } = useItemTypes();
+
+  // The label is what users see, the key is what the server uses
+  const headers: {
+    key: string;
+    label: string;
+    filterType?: FilterType;
+    filterOptions?: string[];
+  }[] = useMemo(
+    () => [
+      { key: "name", label: "Event Name" },
+      { key: "createdBy", label: "Created By", filterType: "user" },
+      { key: "location", label: "Location" },
+      { key: "startDate", label: "Date", filterType: "daterange" },
+      {
+        key: "eventType",
+        label: "Type",
+        filterType: "option",
+        filterOptions: (itemTypes as ItemType[])?.map((v) => v.name)
+      },
+      {
+        key: "status",
+        label: "Status",
+        filterType: "option",
+        filterOptions: Object.values(EventStatus)
+      }
+    ],
+    [itemTypes]
+  );
+
+  const filters = useMemo(
+    () =>
+      headers
+        .filter((h) => h.filterType)
+        .map((h) => ({
+          columnKey: h.key,
+          filterType: h.filterType as FilterType, // TS cannot figure out that its not null
+          filterOptions: h.filterOptions
+        })),
+    [headers]
+  );
+  // Filtering
+  const { columnFilters, updateColumnFilter, resetFilters, isFilterActive } =
+    useTableFilters(filters, true);
+  const [openFilterMenu, setOpenFilterMenu] = useState<string>("");
   const [sortKey, setSortKey] = useState<string>("startDate");
   const [searchWord, setSearchWord] = useState<string>("");
-  const [sortMethod, setSortMethod] = useState<string>("asc");
-  const [expandedButton, setExpandedButton] = useState<string>("");
-
-  const [showCreateForm, setShowCreateForm] = useState(false);
-
-  const { mutate: createEvent } = useCreateEvent();
+  const searchBarRef = useRef<SearchBarRef>(null);
+  const [sortMethod, setSortMethod] = useState<"asc" | "desc">("asc");
   const { data: eventData, isLoading: isEventsLoading } = useEvents(
     sortKey,
     sortMethod,
-    searchWord
+    searchWord,
+    // TODO: find way to shorten this
+    columnFilters["startDate"]?.type == "daterange"
+      ? columnFilters["startDate"]?.filter
+      : undefined,
+    columnFilters["eventType"]?.type == "option"
+      ? columnFilters["eventType"]?.filter
+      : undefined,
+    columnFilters["status"]?.type == "option"
+      ? columnFilters["status"]?.filter
+      : undefined,
+    columnFilters["createdBy"]?.type == "user"
+      ? columnFilters["createdBy"]?.filter.map((u) => u.id)
+      : undefined
   );
-  const { data: itemTypes } = useItemTypes();
-
-  const { user, isLoaded, role } = useAuth();
-
-  const [formData, setFormData] = useState<Partial<Event>>({
-    id: undefined,
-    name: "",
-    createdBy: "",
-    location: "",
-    startDate: undefined,
-    eventType: "",
-    status: undefined
-  });
-
-  // The label is what users see, the key is what the server uses
-  const headers: { key: string; label: string }[] = [
-    { key: "name", label: "Event Name" },
-    { key: "createdBy", label: "Created By" },
-    { key: "location", label: "Location" },
-    { key: "startDate", label: "Date" },
-    { key: "eventType", label: "Type" },
-    { key: "status", label: "Status" }
-  ];
 
   // will toggle modal visibility for editing events
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // formats input data before passing it on
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-
-    // Convert startDate to a Date object before assigning it
-    if (name === "startDate") {
-      const formattedDate = new Date(value);
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: formattedDate
-      }));
-    } else {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value
-      }));
-    }
-  }
-
   function handleButtonClick(key: string) {
-    if (expandedButton === key) {
-      setExpandedButton("");
-    } else {
-      setExpandedButton(key);
-    }
-
     // If the clicked column is already the sort key, toggle the sort method
     if (sortKey === key) {
       setSortMethod(sortMethod === "asc" ? "desc" : "asc");
@@ -111,17 +124,85 @@ function Table() {
       setSortMethod("asc");
     }
   }
-
   function ToggleChevron(column: string) {
+    const isActive = sortKey === column;
+    const icon = isActive
+      ? sortMethod === "asc"
+        ? faChevronUp
+        : faChevronDown
+      : faChevronRight;
+
     return (
-      <button onClick={() => handleButtonClick(column)}>
-        {" "}
-        {column === expandedButton ? (
-          <FontAwesomeIcon icon={faChevronUp} />
-        ) : (
-          <FontAwesomeIcon icon={faChevronDown} />
-        )}
-      </button>
+      <HoverOpacityButton onClick={() => handleButtonClick(column)}>
+        <FontAwesomeIcon icon={icon} />
+      </HoverOpacityButton>
+    );
+  }
+  function FilterButton(
+    column: string,
+    filterType?: FilterType,
+    options?: string[]
+  ) {
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+    if (!filterType) return null;
+
+    const onFilterClose = (event: MouseEvent) => {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as HTMLDivElement)
+      )
+        setOpenFilterMenu("");
+    };
+
+    const filter = columnFilters[column];
+    if (!filter) return null;
+
+    const getFilterPicker = () => {
+      switch (filter.type) {
+        case "daterange":
+          return (
+            <DateRangeFilter
+              minDate={filter.filter.minDate}
+              maxDate={filter.filter.maxDate}
+              onFilterChange={(minDate, maxDate) =>
+                updateColumnFilter(column, { minDate, maxDate })
+              }
+              onClose={onFilterClose}
+            />
+          );
+        case "user":
+          return (
+            <UserFilter
+              selectedUsers={filter.filter}
+              onFilterChange={(users) => updateColumnFilter(column, users)}
+              onClose={onFilterClose}
+            />
+          );
+        default:
+          return (
+            <OptionFilter
+              options={options ?? []}
+              selectedOptions={filter.filter}
+              onFilterChange={(options) => updateColumnFilter(column, options)}
+              onClose={onFilterClose}
+            />
+          );
+      }
+    };
+
+    return (
+      <>
+        <HoverOpacityButton
+          ref={buttonRef}
+          className={isFilterActive(column) ? "text-lightAqua-500" : ""}
+          onClick={() =>
+            setOpenFilterMenu((prev) => (prev === column ? "" : column))
+          }
+        >
+          <FontAwesomeIcon icon={faFilter} />
+        </HoverOpacityButton>
+        {openFilterMenu === column && getFilterPicker()}
+      </>
     );
   }
 
@@ -132,7 +213,6 @@ function Table() {
       }
     });
   };
-
   return (
     <div>
       {/* HEADER BAR*/}
@@ -156,35 +236,40 @@ function Table() {
         </div>
       </div>
 
-      {/* Search bar above table */}
       <div className="flex justify-center">
-        <div className="relative w-5/12 p-4">
-          <input
-            className="h-10 w-full rounded-3xl border-none bg-gray-100 bg-gray-200 px-5 py-2 text-sm focus:shadow-md focus:outline-none "
-            type="search"
-            name="search"
-            placeholder="Search"
-            onChange={(e) => setSearchWord(e.target.value)}
-          />
-          <button
-            className="absolute right-8 top-2/4 -translate-y-2/4 transform cursor-pointer text-gray-500"
+        {/* Clear filter button */}
+        <div className="p-4 text-center ">
+          <HoverOpacityButton
+            className="h-10 w-10 rounded-full bg-gray-100 text-gray-500"
+            title="Clear Filters"
             onClick={() => {
-              // Handle search submit action here
-              console.log("Search submitted");
+              resetFilters();
+              searchBarRef.current?.clearSearch();
             }}
           >
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
+            <FontAwesomeIcon
+              icon={faFilterCircleXmark}
+              className="text-[1rem] transform translate-y-[2px]"
+            />
+          </HoverOpacityButton>
         </div>
+
+        {/* Search bar above table */}
+        <SearchBar
+          className="w-5/12 p-4"
+          onSearchChange={(text) => setSearchWord(text)}
+          saveInURL={true}
+          ref={searchBarRef}
+        />
 
         {/* Add event button*/}
         <div className=" p-4 text-center ">
-          <button
-            className="h-10 w-10 rounded-full bg-gray-200 text-gray-500 focus:shadow-md"
+          <HoverOpacityButton
+            className="h-10 w-10 rounded-full bg-gray-100 text-gray-500 focus:shadow-md"
             onClick={() => setShowAddModal(true)}
           >
             <FontAwesomeIcon icon={faPlus} />
-          </button>
+          </HoverOpacityButton>
           <Modal
             setShowPopup={setShowAddModal}
             showModal={showAddModal}
@@ -196,67 +281,77 @@ function Table() {
       </div>
 
       {/* main table*/}
-      <div className="flex justify-center">
-        <div className="container flex w-full justify-center overflow-hidden">
-          {isEventsLoading ? (
-            "Loading..."
-          ) : (
-            <table className="w-10/12 table-auto overflow-hidden rounded-lg">
-              <thead>
-                <tr className="border-b bg-lightAqua-200 pb-10 text-left ">
-                  {headers.map((col) => (
-                    <th key={col.key} className="p-2.5 pl-5 font-normal">
-                      {" "}
-                      {col.label} {ToggleChevron(col.key)}{" "}
-                    </th>
-                  ))}
-                  <th className="w-10 p-2.5 text-justify font-normal">
+      <div
+        className={`flex justify-center ${
+          isItemTypesLoading ? "opacity-50 pointer-events-none" : ""
+        }`}
+      >
+        <div className="container block w-full justify-center">
+          <table className="w-10/12 table-auto m-auto">
+            <thead>
+              <tr className="border-b pb-10 text-left ">
+                {headers.map((col) => (
+                  <th
+                    key={col.key}
+                    className="p-2.5 pl-5 font-normal relative bg-lightAqua-200 first:rounded-tl-lg"
+                  >
                     {" "}
-                    Edit{" "}
+                    {col.label} {ToggleChevron(col.key)}{" "}
+                    {FilterButton(col.key, col.filterType, col.filterOptions)}
                   </th>
-                </tr>
-              </thead>
+                ))}
+                <th className="w-10 p-2.5 text-justify font-normal bg-lightAqua-200 last:rounded-tr-lg">
+                  Edit
+                </th>
+              </tr>
+            </thead>
 
-              <tbody className="bg-secondary-50">
-                {eventData &&
-                  eventData.map((event: EventResponse) => {
-                    return (
-                      <tr
-                        key={event.name}
-                        className="first:ml-50 border-b p-2.5 last:mr-10 even:bg-slate-100 hover:bg-slate-200"
-                      >
-                        <td className="pl-5 font-light">
-                          <button
-                            className="text-sm"
-                            onClick={() =>
-                              router.push(
-                                "/events/" + event.id + "/repair-requests"
-                              )
-                            }
-                          >
-                            {event.name}
-                          </button>
-                        </td>
-                        <td className="p-2.5 text-sm font-light">
-                          {event.createdBy.firstName} {event.createdBy.lastName}
-                        </td>
-                        <td className="text-sm font-light">{event.location}</td>
-                        <td className="text-sm font-light">
-                          {formatDate(String(event.startDate))}
-                        </td>
-                        <td className="text-sm font-light">
-                          {event.eventType}
-                        </td>
-                        <td className="text-sm font-light">{event.status}</td>
-                        <td className="align-center ml-0 p-2.5 pl-0 text-center">
-                          <EventFormEditButton props={event} />
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          )}
+            <tbody className="bg-secondary-50">
+              {eventData &&
+                eventData.map((event: EventResponse) => {
+                  return (
+                    <tr
+                      key={event.name}
+                      className="first:ml-50 border-b p-2.5 last:mr-10 even:bg-slate-100 hover:bg-slate-200"
+                    >
+                      <td className="pl-5 font-light">
+                        <button
+                          className="text-sm"
+                          onClick={() =>
+                            router.push(
+                              "/events/" + event.id + "/repair-requests"
+                            )
+                          }
+                        >
+                          {event.name}
+                        </button>
+                      </td>
+                      <td className="p-2.5 text-sm font-light">
+                        {event.createdBy.firstName} {event.createdBy.lastName}
+                      </td>
+                      <td className="text-sm font-light">{event.location}</td>
+                      <td className="text-sm font-light">
+                        {formatDate(String(event.startDate))}
+                      </td>
+                      <td className="text-sm font-light">{event.eventType}</td>
+                      <td className="text-sm font-light">{event.status}</td>
+                      <td className="align-center ml-0 p-2.5 pl-0 text-center">
+                        <EventFormEditButton props={event} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              {isEventsLoading && (
+                <tr className=" h-40">
+                  <td colSpan={headers.length + 1}>
+                    <div className="w-full h-full flex items-center justify-center">
+                      <LoadingSpinner />
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
