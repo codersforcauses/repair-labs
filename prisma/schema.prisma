@@ -111,3 +111,24 @@ model EventRepairer {
 
   @@unique([userId, eventId])
 }
+
+enum Role {
+  REPAIRER
+  EVENT_MANAGER
+  ORG_ADMIN
+  SUPER_ADMIN
+}
+
+model Organisation {
+  id    String  @id @default(uuid())
+  name  String  @unique
+  Roles Staff[]
+}
+
+model Staff {
+  id             String       @id @default(uuid())
+  clerkId        String
+  role           Role
+  org            Organisation @relation(fields: [organisationId], references: [id])
+  organisationId String
+}
