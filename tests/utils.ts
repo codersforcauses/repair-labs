@@ -61,4 +61,11 @@ export const seedTestData = async () => {
       thumbnailImage: ""
     }
   });
+
+  await prisma.eventRepairer.create({
+    data: {
+      eventId: "acf5ed50-19a2-11ee-be56-0242ac120002",
+      userId: "Feifan"
+    }
+  });
 };

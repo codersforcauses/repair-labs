@@ -27,11 +27,23 @@ export const mockClerkUsers = [
     publicMetadata: {
       role: "CLIENT"
     }
+  },
+  {
+    id: "Test",
+    firstName: "Spongebob",
+    lastName: "",
+    emailAddresses: [{ emailAddress: "spongebob@gmail.com" }],
+    publicMetadata: {
+      role: "CLIENT"
+    }
   }
 ];
 
 export const clerkClient = {
   users: {
-    getUserList: vi.fn().mockReturnValue(mockClerkUsers)
+    getUserList: vi.fn().mockReturnValue(mockClerkUsers),
+    getUser: vi.fn().mockImplementation((id) => {
+      return mockClerkUsers.find((user) => user.id === id);
+    })
   }
 };

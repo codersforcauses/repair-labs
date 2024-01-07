@@ -23,11 +23,13 @@ export default authMiddleware({
     // handle users who are authenticated
     if (auth.userId) {
       const user = await userService.getUser(auth.userId);
+
       const roleProtectedRoutes = buildRoleProtectedRoutes();
 
       // handle access to routes based on user role
       if (
-        !roleProtectedRoutes[user.role].some((regex) =>
+        // the user object is an auth user, will never be undefined
+        !roleProtectedRoutes[user!.role].some((regex) =>
           regex.test(req.nextUrl.pathname)
         )
       ) {

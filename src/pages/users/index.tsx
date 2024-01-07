@@ -6,7 +6,7 @@ import LoadingSpinner from "@/components/UI/loading-spinner";
 import { useUsers } from "@/hooks/users";
 import { useUpdateUserRole } from "@/hooks/users";
 import { UserRole } from "@/types";
-import { User } from "@/types";
+import { type User } from "@/types";
 
 const User = () => {
   const [orderBy, _setOrderBy] = useState("-created_at");

@@ -2,13 +2,19 @@ import { z } from "zod";
 
 export const createEventSchema = z
   .object({
-    name: z.string().min(1, { message: "Event name is required" }),
-    location: z.string().min(1, { message: "Event location is required" }),
+    name: z
+      .string()
+      .min(1, { message: "Event name must be 1 or more characters long" }),
+    location: z
+      .string()
+      .min(1, { message: "Event location must be 1 or more characters long" }),
     description: z.string().min(5, {
       message: "Description of the event must be more than 5 characters long."
     }),
     disclaimer: z.string().optional(),
-    eventType: z.string().min(1, { message: "Event type is required" }),
+    eventType: z
+      .string()
+      .min(1, { message: "Event type must be 1 or more characters long" }),
     startDate: z
       .string()
       .datetime({ offset: true, message: "Invalid date format for startDate" }),
@@ -21,6 +27,15 @@ export const createEventSchema = z
     message: "End Date must be later than Start Date",
     path: ["endDate"]
   });
+
+export const addEventRepairerSchema = z.object({
+  userId: z
+    .string()
+    .min(1, { message: "UserId must be 1 or more characters long" }),
+  id: z
+    .string()
+    .min(1, { message: "Event ID must be 1 or more characters long" })
+});
 
 export const updateEventSchema = z
   .object({

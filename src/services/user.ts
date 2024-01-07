@@ -49,7 +49,8 @@ async function getUserMapFromIds(userIds: string[]) {
 
 async function getUser(userId: string) {
   const user = await clerkClient.users.getUser(userId);
-  return toResponse(user);
+
+  return user ? toResponse(user) : undefined;
 }
 
 async function updateRole(userId: string, role: UserRole) {
