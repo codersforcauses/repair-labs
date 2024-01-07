@@ -8,26 +8,22 @@ import {
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { EventStatus } from "@prisma/client";
 import { SubmitHandler } from "react-hook-form";
 
 import EventFormEditButton from "@/components/Button/event-form-edit-button";
 import EventForm from "@/components/Forms/event-form";
 import Modal from "@/components/Modal";
 import ProfilePopover from "@/components/ProfilePopover";
-import { useAuth } from "@/hooks/auth";
 import { useCreateEvent, useEvents } from "@/hooks/events";
 import { useItemTypes } from "@/hooks/item-types";
+
 import { CreateEvent, Event, EventResponse } from "@/types";
 import { NextPageWithLayout } from "@/pages/_app";
 import NavBar from "@/components/NavBar";
 
+
 const Events: NextPageWithLayout = () => {
   const router = useRouter();
-
-  const upcoming: EventStatus = "UPCOMING";
-  const ongoing: EventStatus = "ONGOING";
-  const completed: EventStatus = "COMPLETED";
 
   function formatDate(dateString: string): string {
     const actualDate = new Date(dateString);
@@ -43,8 +39,6 @@ const Events: NextPageWithLayout = () => {
   const [sortMethod, setSortMethod] = useState<string>("asc");
   const [expandedButton, setExpandedButton] = useState<string>("");
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
-
   const { mutate: createEvent } = useCreateEvent();
   const { data: eventData, isLoading: isEventsLoading } = useEvents(
     sortKey,
@@ -52,18 +46,6 @@ const Events: NextPageWithLayout = () => {
     searchWord
   );
   const { data: itemTypes } = useItemTypes();
-
-  const { user, isLoaded, role } = useAuth();
-
-  const [formData, setFormData] = useState<Partial<Event>>({
-    id: undefined,
-    name: "",
-    createdBy: "",
-    location: "",
-    startDate: undefined,
-    eventType: "",
-    status: undefined
-  });
 
   // The label is what users see, the key is what the server uses
   const headers: { key: string; label: string }[] = [
@@ -77,6 +59,7 @@ const Events: NextPageWithLayout = () => {
 
   // will toggle modal visibility for editing events
   const [showAddModal, setShowAddModal] = useState(false);
+
 
   // Allows Navbar 'New Event +' button to open /events with the Add new event modal open.
   useEffect(() => {
@@ -103,6 +86,7 @@ const Events: NextPageWithLayout = () => {
       }));
     }
   }
+
 
   function handleButtonClick(key: string) {
     if (expandedButton === key) {
@@ -154,13 +138,7 @@ const Events: NextPageWithLayout = () => {
             placeholder="Search"
             onChange={(e) => setSearchWord(e.target.value)}
           />
-          <button
-            className="absolute right-8 top-2/4 -translate-y-2/4 transform cursor-pointer text-gray-500"
-            onClick={() => {
-              // Handle search submit action here
-              console.log("Search submitted");
-            }}
-          >
+          <button className="absolute right-8 top-2/4 -translate-y-2/4 transform cursor-pointer text-gray-500">
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>

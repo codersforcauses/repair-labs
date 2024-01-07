@@ -30,8 +30,7 @@ export const RepairRequestEmail = ({
   itemName,
   issueDescription,
   estimatedDate,
-  emailSignature,
-  logoUrl
+  emailSignature
 }: RepairRequestEmailProps) => {
   const previewText = `Confirmation of Your Repair Request - #${requestId}`;
   const facebookLink = "https://www.facebook.com/RepairLabPerth/";

@@ -12,11 +12,6 @@ export const createRepairRequestSchema = z.object({
   comment: z.string().optional()
 });
 
-const preprocessBooleanInput = (input: unknown) => {
-  const processedInput = z.string().trim().transform(Boolean).safeParse(input);
-  return processedInput.success ? processedInput.data : input;
-};
-
 export const updateRepairRequestSchema = z.object({
   item: z.string().min(1, { message: "Item name is required" }),
   itemBrand: z.string().min(1, { message: "Brand is required" }),
