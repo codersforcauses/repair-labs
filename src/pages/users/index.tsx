@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import { startCase } from "lodash";
 
 import TablePagination from "@/components/Table/table-pagination";
 import LoadingSpinner from "@/components/UI/loading-spinner";
@@ -60,7 +59,7 @@ const User = () => {
       ) : (
         <>
           <div className="relative overflow-x-auto p-10 shadow-md sm:rounded-lg">
-            <table className="w-full text-left text-sm text-gray-500 ">
+            <table className="w-full text-left text-sm text-gray-500">
               <thead className="bg-gray-50 text-xs uppercase text-gray-700">
                 <tr>
                   <th scope="col" className="px-6 py-3">
@@ -78,7 +77,7 @@ const User = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.items.map((user: User, index: number) => {
+                {users?.items.map((user: User, index: number) => {
                   return <UserRow key={user.id} user={user} index={index} />;
                 })}
               </tbody>
@@ -87,14 +86,14 @@ const User = () => {
             <TablePagination
               perPage={perPage}
               page={page}
-              totalCount={Number(users.meta.totalCount)}
+              totalCount={Number(users?.meta.totalCount)}
               prevPage={() =>
                 setPage(Number(page) - 1 == 0 ? 1 : Number(page) - 1)
               }
               nextPage={() =>
                 setPage(
-                  Number(page) + 1 > Number(users.meta.lastPage)
-                    ? Number(users.meta.lastPage)
+                  Number(page) + 1 > Number(users?.meta.lastPage)
+                    ? Number(users?.meta.lastPage)
                     : Number(page) + 1
                 )
               }
@@ -119,7 +118,7 @@ const UserRow = ({ user, index }: { user: User; index: number }) => {
     >
       <th
         scope="row"
-        className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 "
+        className="whitespace-nowrap px-6 py-4 font-medium text-gray-900"
       >
         {user.firstName}
       </th>
@@ -128,6 +127,7 @@ const UserRow = ({ user, index }: { user: User; index: number }) => {
       <td className="px-6 py-4">
         <select
           value={user.role}
+          className="capitalize"
           onChange={(e) => {
             updateUser(e.target.value as UserRole);
           }}
@@ -135,7 +135,7 @@ const UserRow = ({ user, index }: { user: User; index: number }) => {
           {Object.keys(UserRole).map((role) => {
             return (
               <option value={role} key={role}>
-                {startCase(role.trim().toLowerCase())}
+                {role.trim().toLowerCase().replace("_", " ")}
               </option>
             );
           })}

@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 
+import { NextApiRequest } from "next";
 import { clerkClient } from "@clerk/nextjs";
 import { User as ClerkUser } from "@clerk/nextjs/server";
+import { getAuth as getClerkAuth } from "@clerk/nextjs/server";
 
 import { buildPaginationResponse, PaginationOptions } from "@/lib/pagination";
 import { User, UserRole } from "@/types";
@@ -13,6 +15,17 @@ type ClerkOrderBy =
   | "+updated_at"
   | "-created_at"
   | "-updated_at";
+
+async function getAuth(req: NextApiRequest) {
+  const auth = getClerkAuth(req);
+
+  const role = await getRole(auth.userId!);
+
+  return {
+    ...auth,
+    role
+  };
+}
 
 async function getMany(options: PaginationOptions) {
   const { orderBy, perPage, page, query } = options;
@@ -84,6 +97,7 @@ function toResponse(user: ClerkUser): User {
     emailAddress
   };
 }
+
 /** Used when a user cannot be found in clerk */
 function unknownUser(userId: string): User {
   // TODO: stop force type casting userrole
@@ -97,6 +111,7 @@ function unknownUser(userId: string): User {
 }
 
 const userService = {
+  getAuth,
   getMany,
   getUser,
   updateRole,

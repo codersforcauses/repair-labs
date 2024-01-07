@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "next/dist/server/api-utils";
-import { getAuth } from "@clerk/nextjs/server";
 import { HttpStatusCode } from "axios";
 import { z } from "zod";
 
@@ -13,15 +12,14 @@ export default apiHandler({
 });
 
 async function updateUserRole(req: NextApiRequest, res: NextApiResponse) {
-  const { id: userId } = req.query;
+  const userId = z.string().parse(req.query.id);
   const { role } = req.body;
 
   const parsedRole = validateRole(role);
 
   // only admins can update a user's role
-  const { userId: updaterId } = getAuth(req);
-  // TODO: move this to a more generic function to check permissions.
-  const updaterRole = await userService.getRole(updaterId!);
+  const { role: updaterRole } = await userService.getAuth(req);
+
   if (updaterRole !== UserRole.ADMIN) {
     throw new ApiError(
       HttpStatusCode.Unauthorized,
@@ -29,7 +27,7 @@ async function updateUserRole(req: NextApiRequest, res: NextApiResponse) {
     );
   }
 
-  await userService.updateRole(userId as string, parsedRole);
+  await userService.updateRole(userId, parsedRole);
 
   return res.status(204).end();
 }

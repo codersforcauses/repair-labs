@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "next/dist/server/api-utils";
 import { HttpStatusCode } from "axios";
+import { z } from "zod";
 
 import apiHandler from "@/lib/api-handler";
 import prisma from "@/lib/prisma";
@@ -15,10 +16,10 @@ async function getRepairRequests(
   req: NextApiRequest,
   res: NextApiResponse<RepairRequestResponse[]>
 ) {
-  const { id } = req.query;
+  const eventId = z.string().parse(req.query.id);
 
   const event = await prisma.event.findUnique({
-    where: { id: id as string }
+    where: { id: eventId }
   });
 
   if (!event) {
@@ -26,7 +27,7 @@ async function getRepairRequests(
   }
 
   const repairRequests = await prisma.repairRequest.findMany({
-    where: { event: { id: id as string } },
+    where: { event: { id: eventId } },
     include: {
       images: true
     }

@@ -43,7 +43,7 @@ export const useEvents = (
 
     const url = `/event?${params.toString()}`;
 
-    const response = await httpClient.get(url);
+    const response = await httpClient.get<EventResponse[]>(url);
     return response.data;
   };
 

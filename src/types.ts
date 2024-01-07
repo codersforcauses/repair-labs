@@ -5,6 +5,7 @@ import {
 } from "@prisma/client";
 import { z } from "zod";
 
+import { PaginationResponse } from "@/lib/pagination";
 import { createEventSchema, updateEventSchema } from "@/schema/event";
 import {
   createRepairRequestSchema,
@@ -98,3 +99,5 @@ export type RepairRequestResponse = {
   itemMaterial: string;
   images: string[];
 };
+
+export type UserResponse = PaginationResponse<User>;

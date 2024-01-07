@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
 import { httpClient } from "@/lib/base-http-client";
-import { UserRole } from "@/types";
+import { UserResponse, UserRole } from "@/types";
 
 export const useUsers = (
   perPage: number,
@@ -20,9 +20,9 @@ export const useUsers = (
 
     const url = `/user?${params.toString()}`;
 
-    const response = await httpClient.get(url);
+    const response = await httpClient.get<UserResponse>(url);
 
-    return await response.data;
+    return response.data;
   };
 
   return useQuery({

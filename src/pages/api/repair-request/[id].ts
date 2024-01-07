@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "next/dist/server/api-utils";
 import { HttpStatusCode } from "axios";
+import { z } from "zod";
 
 import apiHandler from "@/lib/api-handler";
 import prisma from "@/lib/prisma";
@@ -11,7 +12,7 @@ export default apiHandler({
 });
 
 async function updateRepairRequest(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
+  const repairRequestId = z.string().parse(req.query.id);
   const parsedData = updateRepairRequestSchema.parse(req.body);
 
   const {
@@ -24,7 +25,7 @@ async function updateRepairRequest(req: NextApiRequest, res: NextApiResponse) {
   } = parsedData;
 
   const existingRepairRequest = await prisma.repairRequest.findUnique({
-    where: { id: id as string }
+    where: { id: repairRequestId }
   });
 
   if (!existingRepairRequest) {
@@ -35,7 +36,7 @@ async function updateRepairRequest(req: NextApiRequest, res: NextApiResponse) {
   }
 
   await prisma.repairRequest.update({
-    where: { id: id as string },
+    where: { id: repairRequestId },
     data: {
       itemMaterial: itemMaterial,
       hoursWorked: hoursWorked,

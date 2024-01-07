@@ -9,7 +9,7 @@ export interface Brand {
 export const useBrands = () => {
   const queryFn = async () => {
     const url = `/brand`;
-    const response = await httpClient.get(url);
+    const response = await httpClient.get<Brand[]>(url);
 
     return response.data;
   };

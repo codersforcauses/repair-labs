@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { z } from "zod";
 
 import apiHandler from "@/lib/api-handler";
 import userService from "@/services/user";
@@ -9,9 +10,9 @@ export default apiHandler({
 });
 
 async function getUser(req: NextApiRequest, res: NextApiResponse<User>) {
-  const { id } = req.query;
+  const userId = z.string().parse(req.query.id);
 
-  const user = await userService.getUser(id as string);
+  const user = await userService.getUser(userId);
 
   return res.status(200).json(user);
 }

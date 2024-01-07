@@ -9,7 +9,7 @@ export interface ItemType {
 export const useItemTypes = () => {
   const queryFn = async () => {
     const url = `/item-type`;
-    const response = await httpClient.get(url);
+    const response = await httpClient.get<ItemType[]>(url);
 
     return response.data;
   };
