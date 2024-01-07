@@ -56,6 +56,11 @@ export enum UserRole {
   CLIENT = "CLIENT"
 }
 
+export type NavPath = {
+  item: string;
+  path: string;
+};
+
 // API Responses on client
 // All dates are returned as ISO strings
 export type EventResponse = {

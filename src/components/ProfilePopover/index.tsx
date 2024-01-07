@@ -20,7 +20,7 @@ export default function ProfilePopover() {
   const [initialDescription, setInitialDescription] = useState(description);
 
   useEffect(() => {
-    setDescription(String(user?.unsafeMetadata.description) || "");
+    setDescription((user?.unsafeMetadata.description as string) || "");
   }, [user?.unsafeMetadata.description]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -60,7 +60,7 @@ export default function ProfilePopover() {
   };
 
   return (
-    <Popover className="relative">
+    <Popover className="flex">
       <Popover.Button>
         <div className="focus:outline-none mx-auto outline-none rounded-full h-12 w-12 relative">
           {user?.imageUrl && (
@@ -69,7 +69,7 @@ export default function ProfilePopover() {
               src={user.imageUrl}
               layout="fill"
               objectFit="cover"
-              className="rounded-full"
+              className="rounded-full "
             />
           )}
         </div>
@@ -83,7 +83,7 @@ export default function ProfilePopover() {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel className="absolute top-14 -right-5 w-80 h-96 rounded-lg bg-white z-10 shadow-custom">
+        <Popover.Panel className="absolute top-[62px] right-5 w-80 h-96 rounded-lg bg-white z-10 shadow-custom">
           <div className="flex flex-col items-center">
             <div className="relative w-28 h-28 rounded-full my-6">
               {user?.imageUrl && (

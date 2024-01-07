@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { startCase } from "lodash";
-
+import { NextPageWithLayout } from "@/pages/_app";
+import NavBar from "@/components/NavBar";
 import TablePagination from "@/components/Table/table-pagination";
 import LoadingSpinner from "@/components/UI/loading-spinner";
 import { useUsers } from "@/hooks/users";
@@ -8,7 +9,7 @@ import { useUpdateUserRole } from "@/hooks/users";
 import { UserRole } from "@/types";
 import { User } from "@/types";
 
-const User = () => {
+const User: NextPageWithLayout = () => {
   const [orderBy, _setOrderBy] = useState("-created_at");
   const [perPage, _setPerPage] = useState(10);
   const [page, setPage] = useState(1);
@@ -103,6 +104,15 @@ const User = () => {
         </>
       )}
     </div>
+  );
+};
+
+User.getLayout = function getLayout(page) {
+  return (
+    <>
+      <NavBar />
+      {page}
+    </>
   );
 };
 

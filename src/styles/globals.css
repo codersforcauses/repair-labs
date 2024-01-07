@@ -78,3 +78,7 @@
     max-width: 1536px;
   }
 }
+
+html {
+  overflow-y: scroll;
+}

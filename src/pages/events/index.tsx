@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -16,9 +16,13 @@ import Modal from "@/components/Modal";
 import ProfilePopover from "@/components/ProfilePopover";
 import { useCreateEvent, useEvents } from "@/hooks/events";
 import { useItemTypes } from "@/hooks/item-types";
-import { CreateEvent, EventResponse } from "@/types";
 
-function Table() {
+import { CreateEvent, Event, EventResponse } from "@/types";
+import { NextPageWithLayout } from "@/pages/_app";
+import NavBar from "@/components/NavBar";
+
+
+const Events: NextPageWithLayout = () => {
   const router = useRouter();
 
   function formatDate(dateString: string): string {
@@ -55,6 +59,34 @@ function Table() {
 
   // will toggle modal visibility for editing events
   const [showAddModal, setShowAddModal] = useState(false);
+
+
+  // Allows Navbar 'New Event +' button to open /events with the Add new event modal open.
+  useEffect(() => {
+    if (router.query.openModal === "true") {
+      setShowAddModal(true);
+    }
+  }, [router.query.openModal]);
+
+  // formats input data before passing it on
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = event.target;
+
+    // Convert startDate to a Date object before assigning it
+    if (name === "startDate") {
+      const formattedDate = new Date(value);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: formattedDate
+      }));
+    } else {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value
+      }));
+    }
+  }
+
 
   function handleButtonClick(key: string) {
     if (expandedButton === key) {
@@ -95,33 +127,12 @@ function Table() {
   };
 
   return (
-    <div>
-      {/* HEADER BAR*/}
-      <div className=" flex w-full flex-row border-b-[2px] border-slate-300 ">
-        <Image
-          className="m-10 mb-5 mt-5"
-          src="/images/repair_lab_logo.jpg"
-          alt="logo"
-          width="90"
-          height="90"
-        />
-        <h1 className="mt-[50px] text-3xl font-semibold text-slate-600">
-          {" "}
-          Event Listings
-        </h1>
-
-        {/* ACCOUNT AREA*/}
-        <div className="absolute right-10 self-center justify-self-end">
-          {/* Profile Pop Over */}
-          <ProfilePopover />
-        </div>
-      </div>
-
+    <div className="mt-20">
       {/* Search bar above table */}
       <div className="flex justify-center">
         <div className="relative w-5/12 p-4">
           <input
-            className="h-10 w-full rounded-3xl border-none bg-gray-100 bg-gray-200 px-5 py-2 text-sm focus:shadow-md focus:outline-none "
+            className="h-10 w-full rounded-3xl border-none bg-gray-200 px-5 py-2 text-sm focus:shadow-md focus:outline-none "
             type="search"
             name="search"
             placeholder="Search"
@@ -216,6 +227,14 @@ function Table() {
       </div>
     </div>
   );
-}
+};
 
-export default Table;
+Events.getLayout = function getLayout(page) {
+  return (
+    <>
+      <NavBar />
+      {page}
+    </>
+  );
+};
+export default Events;

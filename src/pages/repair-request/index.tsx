@@ -18,6 +18,8 @@ import generateThumbnail from "@/lib/gen-thumbnail";
 import uploadImage from "@/lib/upload-image";
 import { createRepairRequestSchema } from "@/schema/repair-request";
 import { CreateRepairRequest } from "@/types";
+import { NextPageWithLayout } from "@/pages/_app";
+import NavBar from "@/components/NavBar";
 
 export interface FormValues extends CreateRepairRequest {
   tncAccepted: boolean;
@@ -29,7 +31,7 @@ const repairRequestFormSchema = createRepairRequestSchema.extend({
   })
 });
 
-const Home = () => {
+const RepairRequest: NextPageWithLayout = () => {
   const { control, handleSubmit, setValue } = useForm<FormValues>({
     resolver: zodResolver(repairRequestFormSchema),
     defaultValues: {
@@ -166,4 +168,13 @@ const Home = () => {
   );
 };
 
-export default Home;
+RepairRequest.getLayout = function getLayout(page) {
+  return (
+    <>
+      <NavBar />
+      {page}
+    </>
+  );
+};
+
+export default RepairRequest;
