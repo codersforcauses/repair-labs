@@ -5,7 +5,8 @@ import apiHandler from "@/lib/api-handler";
 import { createEventSchema } from "@/schema/event";
 import eventService from "@/services/event";
 import { EventResponse } from "@/types";
-
+import userService from "@/services/user";
+import { Event, UserRole } from "@/types";
 import prisma from "../../../lib/prisma";
 
 export default apiHandler({
@@ -20,42 +21,59 @@ async function getEvents(
   const { sortKey, sortMethod, searchWord } = req.query;
   const sortObj: { [key: string]: "asc" | "desc" } = {};
   sortObj[sortKey as string] = sortMethod as "asc" | "desc";
-
-  // Use 'search' query parameter to filter events
-  const events = await prisma.event.findMany({
-    ...(searchWord
+  const { userId } = getAuth(req);
+  const role = await userService.getRole(userId as string);
+  const isRepairer =
+    role == UserRole.REPAIRER
       ? {
-          where: {
-            OR: [
-              {
-                name: {
-                  contains: searchWord as string,
-                  mode: "insensitive"
-                }
-              },
-              {
-                createdBy: {
-                  contains: searchWord as string,
-                  mode: "insensitive"
-                }
-              },
-              {
-                location: {
-                  contains: searchWord as string,
-                  mode: "insensitive"
-                }
-              },
-              {
-                eventType: {
-                  contains: searchWord as string,
-                  mode: "insensitive"
-                }
-              }
-              // Add more fields to search if necessary
-            ]
+          eventRepairer: {
+            some: {
+              userId: userId as string
+            }
           }
         }
-      : {}),
+      : {};
+  // Use 'search' query parameter to filter events
+  const events = await prisma.event.findMany({
+    where: {
+      ...isRepairer,
+
+      OR: searchWord
+        ? [
+            {
+              name: {
+                contains: searchWord as string,
+                mode: "insensitive"
+              }
+            },
+            {
+              createdBy: {
+                contains: searchWord as string,
+                mode: "insensitive"
+              }
+            },
+            {
+              location: {
+                contains: searchWord as string,
+                mode: "insensitive"
+              }
+            },
+            {
+              eventType: {
+                contains: searchWord as string,
+                mode: "insensitive"
+              }
+            }
+            // Add more fields to search if necessary
+          ]
+        : [
+            {
+              name: {
+                contains: ""
+              }
+            }
+          ] // Empty OR array when searchWord is not present
+    },
     orderBy: sortObj
   });
 
