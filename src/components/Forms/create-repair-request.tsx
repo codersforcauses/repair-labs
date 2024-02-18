@@ -8,7 +8,6 @@ import FieldImageUpload from "@/components/FormFields/field-image-upload";
 import SingleSelect from "@/components/FormFields/field-single-select";
 import FieldTextArea from "@/components/FormFields/field-text-area";
 import { TermsAndConditions } from "@/components/terms-and-conditions";
-import { Brand, useBrands } from "@/hooks/brands";
 import { EventOption, useEventOptions } from "@/hooks/events";
 import { ItemType, useItemTypes } from "@/hooks/item-types";
 import { useCreateRepairRequest } from "@/hooks/repair-request";
@@ -16,6 +15,8 @@ import generateThumbnail from "@/lib/gen-thumbnail";
 import uploadImage from "@/lib/upload-image";
 import { createRepairRequestSchema } from "@/schema/repair-request";
 import { CreateRepairRequest } from "@/types";
+
+import FieldInput from "../FormFields/field-input";
 
 export interface FormValues extends CreateRepairRequest {
   tncAccepted: boolean;
@@ -42,7 +43,6 @@ export default function RepairRequestForm({ eventId }: { eventId?: string }) {
   });
 
   const { data: itemTypeList } = useItemTypes();
-  const { data: brandList } = useBrands();
   const { data: eventOptions } = useEventOptions();
   const { mutateAsync: createRepairRequest } = useCreateRepairRequest();
   const router = useRouter();
@@ -67,19 +67,12 @@ export default function RepairRequestForm({ eventId }: { eventId?: string }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       {/* Input field for Brand of Item */}
-      <SingleSelect
+      <FieldInput
         name="itemBrand"
         control={control}
         placeholder="Select a brand"
         label="Brand"
         rules={{ required: true }}
-        options={
-          brandList
-            ? brandList.map((brand: Brand) => {
-                return { id: brand.name, text: brand.name };
-              })
-            : []
-        }
       />
       <SingleSelect
         name="itemType"

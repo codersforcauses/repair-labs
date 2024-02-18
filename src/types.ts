@@ -86,7 +86,7 @@ export type EventResponse = {
 };
 
 export type RepairRequestResponse = {
-  id: string;
+  id: number;
   createdBy: User;
   assignedTo: User;
   eventId: string;

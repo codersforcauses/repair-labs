@@ -56,9 +56,9 @@ enum UserRole {
 }
 
 model RepairRequest {
-  id         String @id @default(uuid())
+  id         Int    @id @default(autoincrement())
   createdBy  String //User id
-  assignedTo String @default("") //volunteer id
+  assignedTo String @default("") //volugit adnteer id
 
   event   Event  @relation(fields: [eventId], references: [id]) //relation field (many repair_requests to one event)
   eventId String
@@ -89,16 +89,12 @@ model ItemType {
   events         Event[]
 }
 
-model Brand {
-  name String @id
-}
-
 model RepairRequestImage {
   id    String @id @default(uuid())
   s3Key String //Potentially to be changed for privacy reasons
 
   repairRequest   RepairRequest @relation(fields: [repairRequestId], references: [id])
-  repairRequestId String
+  repairRequestId Int
 }
 
 model EventImage {
@@ -118,16 +114,8 @@ model EventRepairer {
   @@unique([userId, eventId])
 }
 
-model Organisation {
-  id    String  @id @default(uuid())
-  name  String  @unique
-  Roles Staff[]
-}
-
 model Staff {
-  id             String       @id @default(uuid())
-  clerkId        String
-  role           UserRole
-  org            Organisation @relation(fields: [organisationId], references: [id])
-  organisationId String
+  id      String   @id @default(uuid())
+  clerkId String
+  role    UserRole
 }

@@ -3,7 +3,6 @@
 /* eslint-disable no-console */
 import { faker } from "@faker-js/faker";
 import {
-  Brand,
   Event,
   EventRepairer,
   ItemType,
@@ -46,14 +45,12 @@ async function createItemTypes(itemTypeNames: string[]) {
 }
 
 async function createBrands(brandNames: string[]) {
-  const brands: Brand[] = [];
+  const brands: string[] = [];
 
   for (const name of brandNames) {
-    const brand = await prisma.brand.create({
-      data: { name }
-    });
+    const brand = name;
 
-    brands.push(brand);
+    brands.push(name);
     console.log(brand);
   }
 
@@ -97,7 +94,7 @@ async function createRandomRepairRequests(
   count: number,
   events: Event[],
   itemTypes: ItemType[],
-  brands: Brand[]
+  brands: string[]
 ) {
   const repairRequests: RepairRequest[] = [];
 
@@ -112,7 +109,7 @@ async function createRandomRepairRequests(
         status: "PENDING",
         description: faker.lorem.sentence(),
         comment: faker.lorem.sentence(),
-        itemBrand: faker.helpers.arrayElement(brands).name,
+        itemBrand: faker.helpers.arrayElement(brands),
         itemMaterial: faker.word.noun(),
         requestDate: faker.date.past(),
         updatedAt: faker.date.recent(),
@@ -169,7 +166,7 @@ async function main() {
   faker.seed(fakerSeed);
   await deleteAllData();
   const itemTypes: ItemType[] = await createItemTypes(itemTypeNames);
-  const brands: Brand[] = await createBrands(brandNames);
+  const brands: string[] = await createBrands(brandNames);
   const events: Event[] = await createRandomEvents(eventCount, itemTypes);
   // const repairRequests: RepairRequest[] =
   await createRandomRepairRequests(

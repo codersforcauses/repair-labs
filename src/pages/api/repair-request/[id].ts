@@ -12,7 +12,7 @@ export default apiHandler({
 });
 
 async function updateRepairRequest(req: NextApiRequest, res: NextApiResponse) {
-  const repairRequestId = z.string().parse(req.query.id);
+  const repairRequestId = z.coerce.number().parse(req.query.id);
   const parsedData = updateRepairRequestSchema.parse(req.body);
 
   const {

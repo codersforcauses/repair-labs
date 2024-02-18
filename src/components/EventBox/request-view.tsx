@@ -5,7 +5,7 @@ import { User } from "@/types";
 
 // Contains type of info stored in our event box.
 type RequestProps = {
-  repairRequestId: string;
+  repairRequestId: number;
   createdBy: User;
   requestDate: string;
   itemType: string;

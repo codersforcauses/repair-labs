@@ -11,7 +11,7 @@ export default apiHandler({
 
 async function createRepairRequest(
   req: NextApiRequest,
-  res: NextApiResponse<{ id: string }>
+  res: NextApiResponse<{ id: number }>
 ) {
   const parsedData = createRepairRequestSchema.parse(req.body);
 

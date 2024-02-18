@@ -10,7 +10,7 @@ async function getImages(req: NextApiRequest, res: NextApiResponse) {
   const repairRequestId = req.query.repairRequestId as string;
 
   const repairRequestImages = await prisma.repairRequestImage.findMany({
-    where: { repairRequest: { id: repairRequestId } }
+    where: { repairRequest: { id: Number(repairRequestId) } }
   });
 
   return res.status(200).json(repairRequestImages);

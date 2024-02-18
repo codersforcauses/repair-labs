@@ -91,7 +91,7 @@ export default function RepairRequests() {
                     <div key={item.id}>
                       <Card
                         props={{
-                          title: item.id,
+                          title: String(item.id),
                           image: "/images/broken-clock-sad.jpg",
                           description: item.description,
                           status: item.status,

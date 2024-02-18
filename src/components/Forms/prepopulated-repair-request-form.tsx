@@ -6,7 +6,6 @@ import FieldInput from "@/components/FormFields/field-input";
 import FieldRadio from "@/components/FormFields/field-radio";
 import FieldSingleSelect from "@/components/FormFields/field-single-select";
 import FieldTextArea from "@/components/FormFields/field-text-area";
-import { Brand, useBrands } from "@/hooks/brands";
 import { ItemType, useItemTypes } from "@/hooks/item-types";
 import { updateRepairRequestSchema } from "@/schema/repair-request";
 import type { GeneralRepairAttempt, RepairRequestResponse } from "@/types";
@@ -19,7 +18,6 @@ export default function PrepopulatedRepairAttemptForm({
   onSubmit: SubmitHandler<GeneralRepairAttempt>;
 }) {
   const { data: itemTypes } = useItemTypes();
-  const { data: itemBrands } = useBrands();
 
   let status;
   switch (props.status) {
@@ -70,18 +68,12 @@ export default function PrepopulatedRepairAttemptForm({
         />
 
         {/* Brand, Material */}
-        <FieldSingleSelect
+        <FieldInput
           name="itemBrand"
           label="Brand"
           control={control}
           rules={{ required: true }}
-          options={
-            itemBrands
-              ? itemBrands.map((brand: Brand) => {
-                  return { id: brand.name, text: brand.name };
-                })
-              : []
-          }
+          placeholder=""
         />
         <FieldInput
           name="itemMaterial"

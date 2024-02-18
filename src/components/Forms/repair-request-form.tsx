@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Brand, ItemType } from "@prisma/client";
+import { ItemType } from "@prisma/client";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import Button from "@/components/Button";
@@ -11,11 +11,9 @@ import { updateRepairRequestSchema } from "@/schema/repair-request";
 import type { GeneralRepairAttempt } from "@/types";
 
 export default function RepairAttemptForm({
-  itemBrands,
   itemTypes,
   onSubmit
 }: {
-  itemBrands?: Brand[];
   itemTypes?: ItemType[];
   onSubmit?: SubmitHandler<GeneralRepairAttempt>;
 }) {
@@ -32,18 +30,6 @@ export default function RepairAttemptForm({
       repairComment: ""
     }
   });
-
-  let actualItemBrands;
-  itemBrands
-    ? (actualItemBrands = itemBrands.map((type) => ({
-        id: type.name,
-        text: type.name
-      })))
-    : (actualItemBrands = [
-        { id: 0, text: "Alienware" },
-        { id: 1, text: "Giant Bicycles" },
-        { id: 2, text: "Seiko" }
-      ]);
 
   let actualItemTypes;
   itemTypes
@@ -87,12 +73,11 @@ export default function RepairAttemptForm({
         />
 
         {/* Brand, Material */}
-        <FieldSingleSelect
+        <FieldInput
           name="itemBrand"
           label="Brand"
           control={control}
           rules={{ required: true }}
-          options={actualItemBrands}
         />
         <FieldInput
           name="itemMaterial"
