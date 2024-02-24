@@ -10,6 +10,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   textSize?: string;
   hover?: string;
   position?: string;
+  textWeight?: string;
 }
 
 export default function Button({
@@ -22,13 +23,14 @@ export default function Button({
   textSize = "text-lg",
   hover = "hover:bg-primary-800",
   position = "mx-auto",
+  textWeight = "font-normal",
   children,
   ...props
 }: ButtonProps) {
   return (
     <button
       {...props}
-      className={`${color} ${border} ${radius} ${height} ${width} ${textColor} ${textSize} ${hover} ${position}`}
+      className={`${color} ${border} ${radius} ${height} ${width} ${textColor} ${textSize} ${hover} ${position} ${textWeight}`}
     >
       {children}
     </button>

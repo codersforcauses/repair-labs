@@ -1,17 +1,20 @@
+import { useState } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { FaChevronDown } from "react-icons/fa6";
 
-import { User } from "@/types";
+import RepairAttemptForm from "@/components/Forms/repair-attempt-form";
+import Modal from "@/components/Modal";
+import { RepairRequestResponse, User } from "@/types";
 
 // Contains type of info stored in our event box.
-type RequestProps = {
+export type RequestProps = {
   repairRequestId: string;
   createdBy: User;
   requestDate: string;
   itemType: string;
   itemBrand: string;
   description: string;
-  handleClick?: () => void;
+  repairAttemptProps: RepairRequestResponse;
 };
 
 const RequestView = ({
@@ -20,8 +23,13 @@ const RequestView = ({
   requestDate,
   itemType,
   itemBrand,
-  description
+  description,
+  repairAttemptProps
 }: RequestProps) => {
+  const [showRepairRequestModal, setShowRepairRequestModal] = useState(false);
+  function manageModal() {
+    setShowRepairRequestModal(true);
+  }
   return (
     <div className="mx-5 mt-4 rounded-lg bg-slate-200 shadow-lg">
       <Disclosure>
@@ -34,7 +42,7 @@ const RequestView = ({
             >
               <div className=" flex flex-col text-left py-2">
                 <span className="font-bold">
-                  {repairRequestId}- {createdBy.id}
+                  {repairRequestId}- {createdBy.firstName} {createdBy.lastName}
                 </span>
               </div>
               <FaChevronDown
@@ -75,14 +83,26 @@ const RequestView = ({
                 <div className="flex justify-center mt-1">
                   <button
                     className="bg-primary-700 px-4 py-1 rounded-lg text-white text-md hover:bg-primary-600"
-                    // onClick={() =>
-                    // For future use when linking to issue 198
-                    // router.push("")
-                    // }
+                    onClick={manageModal}
+                    onKeyDown={manageModal}
                   >
                     Repair
                   </button>
                 </div>
+                <Modal
+                  showModal={showRepairRequestModal}
+                  setShowPopup={setShowRepairRequestModal}
+                  height="h-full overflow-auto"
+                  title="Repair Attempt"
+                  width="w-[85svw] sm:w-[80svw] sm:max-w-3/4 md:w-3/4 lg:w-2/3"
+                  crossWidthAndHeight="w-10 h-10"
+                >
+                  <div className="text-center">
+                    <div>
+                      <RepairAttemptForm props={repairAttemptProps} />
+                    </div>
+                  </div>
+                </Modal>
               </Disclosure.Panel>
             </Transition>
           </>

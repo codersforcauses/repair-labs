@@ -35,7 +35,8 @@ export default function FieldTextArea<T extends FieldValues = FieldValues>({
 }: FormProps<T>) {
   const { field, fieldState } = useController(props);
 
-  const baseStyle = `relative mb-2 flex ${height} ${width} flex-row items-center justify-between rounded-lg border border-grey-300 px-3 shadow hover:shadow-grey-300`;
+  // const baseStyle = `relative mb-2 flex ${height} ${width} flex-row items-center justify-between rounded-lg border border-grey-300 px-3 shadow hover:shadow-grey-300`;
+  const baseStyle = `relative flex ${height} ${width} justify-between rounded-lg bg-white px-3 py-2.5 text-sm font-medium text-gray-900 shadow-sm border border-grey-300 hover:shadow-grey-300`;
   const errorBorderStyle = `border-red-500`;
   const normalBorderStyle = `border-grey-300`;
   const textAreaStyle = `overflow-wrap:break-word pt-3 h-full w-full resize-none overflow-y-auto text-sm placeholder:text-gray-500 placeholder:font-normal focus:outline-none focus:ring-0`;

@@ -81,23 +81,18 @@ const Home = () => {
                   <div>
                     <ul id="repairRequestList">
                       {repairRequests.items.map(
-                        ({
-                          id,
-                          createdBy,
-                          requestDate,
-                          itemType,
-                          itemBrand,
-                          description
-                        }: RepairRequestResponse) => (
-                          <RequestView
-                            key={id}
-                            repairRequestId={id}
-                            requestDate={formatDate(String(requestDate))}
-                            createdBy={createdBy}
-                            itemType={itemType}
-                            itemBrand={itemBrand}
-                            description={description}
-                          />
+                        (item: RepairRequestResponse) => (
+                          <div key={item.id}>
+                            <RequestView
+                              repairRequestId={item.id}
+                              requestDate={formatDate(String(item.requestDate))}
+                              createdBy={item.createdBy}
+                              itemType={item.itemType}
+                              itemBrand={item.itemBrand}
+                              description={item.description}
+                              repairAttemptProps={item}
+                            />
+                          </div>
                         )
                       )}
                     </ul>

@@ -70,7 +70,7 @@ export default function RepairRequestForm({ eventId }: { eventId?: string }) {
       <SingleSelect
         name="itemBrand"
         control={control}
-        placeholder="Select a brand"
+        placeholder="Select a brand..."
         label="Brand"
         rules={{ required: true }}
         options={
@@ -84,7 +84,7 @@ export default function RepairRequestForm({ eventId }: { eventId?: string }) {
       <SingleSelect
         name="itemType"
         control={control}
-        placeholder="Select an item type"
+        placeholder="Select an item type..."
         label="Item Type"
         rules={{ required: true }}
         options={
@@ -99,17 +99,19 @@ export default function RepairRequestForm({ eventId }: { eventId?: string }) {
       <FieldTextArea
         name="description"
         label="Description"
-        placeholder="Enter a description"
+        placeholder="Enter a description..."
         control={control}
         rules={{ required: true }}
       />
+
       <FieldImageUpload multiple name="images" control={control} />
+      <p className="text-center">(psst you can upload multiple images)</p>
       {/* Input field for Event */}
       {!eventId && (
         <SingleSelect
           name="eventId"
           control={control}
-          placeholder="Select an event"
+          placeholder="Select an event..."
           label="Event"
           options={
             eventOptions
@@ -123,12 +125,18 @@ export default function RepairRequestForm({ eventId }: { eventId?: string }) {
       <FieldTextArea
         name="comment"
         label="Additional Comment"
-        placeholder="Enter additional comments"
+        placeholder="Anything else we should know?"
         control={control}
         rules={{ required: false }}
       />
       <TermsAndConditions setValue={setValue} control={control} />
-      <Button type="submit" height="h-9" width="w-full" textSize="text-base">
+      <Button
+        type="submit"
+        height="h-12"
+        width="w-full"
+        textSize="text-lg"
+        textWeight="font-semibold"
+      >
         Submit
       </Button>
     </form>

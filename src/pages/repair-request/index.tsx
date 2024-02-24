@@ -1,5 +1,4 @@
 // Page for submitting a repair request
-import Image from "next/image";
 
 import RepairRequestForm from "@/components/Forms/create-repair-request";
 import NavBar from "@/components/NavBar";
@@ -7,27 +6,16 @@ import { NextPageWithLayout } from "@/pages/_app";
 
 const RepairRequest: NextPageWithLayout = () => {
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 bg-slate-100">
       <div className="flex w-screen flex-col justify-center gap-4 md:w-3/6 lg:w-4/12">
-        {/* Logo of Repair Lab, which links to the main website. */}
-
-        <picture className="flex justify-center">
-          <a href="https://repairlab.myfreesites.net/" target="_blank">
-            <Image
-              src="/images/repair_lab_logo.jpg"
-              alt="Repair Labs Logo"
-              width={80}
-              height={80}
-            />
-          </a>
-        </picture>
-
         {/* Heading of the Page */}
-
-        <h1 className="flex justify-center text-xl font-bold">
+        <h1 className="flex justify-center text-4xl font-bold pt-5 ">
           {" "}
           Submit a Repair Request
         </h1>
+        <h4 className="flex justify-center text-lg font-bold text-primary-500 pb-2">
+          Tell us about your item and what needs fixing
+        </h4>
         <RepairRequestForm />
       </div>
     </div>

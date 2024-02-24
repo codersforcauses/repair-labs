@@ -45,14 +45,15 @@ export const TermsAndConditions = ({
               ? setValue(field.name, !field.value)
               : handleshowPopupChange()
           }
+          className="accent-primary-600 w-5 h-5 rounded-xl"
         />
 
         <div className="space-x-1.5">
-          <span className="pl-2">I have read and accept the</span>
+          <span className="pl-2 font-medium">I have read and accept the</span>
           <button
             type="button"
             onClick={handleshowPopupChange}
-            className="text-darkAqua-400 hover:text-darkAqua-200"
+            className="text-darkAqua-400 hover:text-darkAqua-200 font-medium"
           >
             house rules
           </button>
@@ -92,7 +93,10 @@ export const TermsAndConditions = ({
                 <Dialog.Panel className="w-auto max-w-5xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <div className="flex justify-end">
                     <button onClick={handleshowPopupChange}>
-                      <AiFillCloseCircle className="text-2xl" color="teal" />
+                      <AiFillCloseCircle
+                        className="text-2xl w-10 h-10 "
+                        color="teal"
+                      />
                     </button>
                   </div>
 

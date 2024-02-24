@@ -10,6 +10,7 @@ type ModalProps = {
   width?: string;
   height?: string;
   children?: ReactNode;
+  crossWidthAndHeight?: string;
 };
 
 const Modal = ({
@@ -18,7 +19,8 @@ const Modal = ({
   title,
   width = "w-full sm:max-w-lg md:max-w-2xl",
   height = "h-fit",
-  children
+  children,
+  crossWidthAndHeight = "w-6 h-6"
 }: ModalProps) => {
   return (
     <>
@@ -66,13 +68,18 @@ const Modal = ({
                     ""
                   )}
 
-                  <div>{children}</div>
-                  <button
-                    onClick={() => setShowPopup(false)}
-                    className="absolute right-2 top-2 rounded-lg p-1 hover:bg-gray-50"
-                  >
-                    <AiFillCloseCircle className="text-2xl" color="teal" />
-                  </button>
+                  <div>
+                    {children}
+                    <button
+                      onClick={() => setShowPopup(false)}
+                      className="absolute right-2 top-2 rounded-lg p-1 hover:bg-gray-50"
+                    >
+                      <AiFillCloseCircle
+                        className={`text-2xl ${crossWidthAndHeight}`}
+                        color="teal"
+                      />
+                    </button>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
