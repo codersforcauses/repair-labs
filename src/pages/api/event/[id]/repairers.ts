@@ -1,10 +1,10 @@
-import { HttpStatusCode } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "next/dist/server/api-utils";
+import { HttpStatusCode } from "axios";
 import { z } from "zod";
 
 import apiHandler from "@/lib/api-handler";
-import { addEventRepairerSchema } from "@/schema/event";
+import { modifyEventRepairerSchema } from "@/schema/event";
 import userService from "@/services/user";
 import { User } from "@/types";
 
@@ -12,7 +12,8 @@ import prisma from "../../../../lib/prisma";
 
 export default apiHandler({
   get: getRepairers,
-  post: createRepairer
+  post: createRepairer,
+  delete: deleteRepairers
 });
 
 interface responseEventRepairer {
@@ -23,7 +24,7 @@ async function createRepairer(
   req: NextApiRequest,
   res: NextApiResponse<responseEventRepairer>
 ) {
-  const { userId, id } = addEventRepairerSchema.parse({
+  const { userId, id } = modifyEventRepairerSchema.parse({
     ...req.body,
     ...req.query
   });
@@ -49,7 +50,7 @@ async function createRepairer(
   const responseEndpoint = await prisma.eventRepairer.createMany({
     data: userId.map((userId) => ({
       userId: userId as string,
-      eventId: id as string
+      eventId: id
     })),
     skipDuplicates: true
   });
@@ -59,7 +60,7 @@ async function createRepairer(
     .json({ message: "Successfully added volunteers to an event" });
 }
 
-async function getRepairers(req: NextApiRequest, res: NextApiResponse) {
+async function getRepairers(req: NextApiRequest, res: NextApiResponse<User[]>) {
   const eventId = z.string().parse(req.query.id);
   const result = await getEventRepairers(eventId as string);
 
@@ -86,15 +87,53 @@ async function getEventRepairers(id: string) {
   if (Object.keys(repairersUsers).length !== userIds.length) {
     console.error("Mismatch in users from clerk and database");
   }
-
-  return userIds.map((userId) => {
+  const repairers = userIds.map((userId) => {
     const userData = repairersUsers[userId];
 
     return {
-      userId: userId,
+      id: userId,
       firstName: userData?.firstName,
       lastName: userData?.lastName,
-      email: userData?.emailAddress
+      emailAddress: userData?.emailAddress
     };
   });
+
+  return repairers as User[];
+}
+
+async function deleteRepairers(
+  req: NextApiRequest,
+  res: NextApiResponse<responseEventRepairer>
+) {
+  const { userId, id } = modifyEventRepairerSchema.parse({
+    ...req.body,
+    ...req.query
+  });
+
+  const event = await prisma.event.findUnique({ where: { id: id } });
+  if (!event) {
+    throw new ApiError(HttpStatusCode.NotFound, "Event not found");
+  }
+
+  const userMap = await userService.getUsers(userId);
+
+  const filterEmpty = userMap.filter((user) =>
+    user && Object.keys(user).length !== 0 ? user : null
+  );
+  if (filterEmpty.length === 0) {
+    throw new ApiError(HttpStatusCode.NotFound, "Users not found / empty");
+  }
+
+  const responseEndpoint = await prisma.eventRepairer.deleteMany({
+    where: {
+      userId: {
+        in: userId
+      },
+      eventId: id
+    }
+  });
+
+  res
+    .status(200)
+    .json({ message: "Successfully deleted volunteers from an event" });
 }

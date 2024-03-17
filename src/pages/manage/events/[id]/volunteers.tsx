@@ -8,10 +8,11 @@ import Modal from "@/components/Modal";
 import Sidebar from "@/components/sidebar/index";
 import LoadingSpinner from "@/components/UI/loading-spinner";
 import { useEvent } from "@/hooks/events";
+import { useRepairers } from "@/hooks/repairers";
 import { User } from "@/types";
 
 export default function Volunteers() {
-  const [volunteers, _setVolunteers] = useState<User[]>([]);
+  const [volunteers, setVolunteers] = useState<User[]>([]);
   const [headerValues, setHeaderValues] = useState<HeaderProps>();
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const {
@@ -19,8 +20,10 @@ export default function Volunteers() {
   } = useRouter();
 
   const { data: event } = useEvent(eventId as string);
+  const { data: repairers } = useRepairers(eventId as string);
+
   useEffect(() => {
-    if (!event) return;
+    if (!event || !repairers) return;
     setHeaderValues({
       name: event.name,
       location: event.location,
@@ -28,7 +31,8 @@ export default function Volunteers() {
       endDate: new Date(event.endDate),
       createdBy: event.createdBy
     });
-  }, [event]);
+    setVolunteers(repairers);
+  }, [event, repairers]);
 
   function manageVolunteer() {
     setShowVolunteerModal(true);
@@ -43,7 +47,7 @@ export default function Volunteers() {
               <div className="flex flex-row w-auto p-4 text-2xl font-bold text-zinc-400 content-center justify-between">
                 <span>Volunteers ({volunteers.length})</span>
                 <button
-                  className="flex rounded-lg border bg-primary-500 p-2 w-1/5 shadow-md transition hover:cursor-pointer hover:bg-primary-300 text-sm text-white justify-center"
+                  className="flex rounded-lg border bg-primary-500 p-2 w-1/5 shadow-md transition duration-150 ease-in-out hover:cursor-pointer hover:bg-primary-300 text-sm active:bg-primary-500 text-white justify-center"
                   onClick={manageVolunteer}
                   onKeyDown={manageVolunteer}
                 >
@@ -64,18 +68,26 @@ export default function Volunteers() {
                 ))}
               </div>
             </div>
-            <Modal
-              showModal={showVolunteerModal}
-              setShowPopup={setShowVolunteerModal}
-              height="h-full"
-              title="Add / Remove Volunteers"
-            >
-              <div className="text-center">
-                <div>
-                  <VolunteerManageForm setShowModal={setShowVolunteerModal} />
+            {event && (
+              <Modal
+                showModal={showVolunteerModal}
+                setShowPopup={setShowVolunteerModal}
+                height="h-5/6 overflow-y-auto"
+              >
+                <div className="text-center flex flex-col">
+                  <h1 className="text-xl font-bold">Add / Remove Volunteers</h1>
+                  <div className="h-4/5">
+                    <VolunteerManageForm
+                      volunteersArray={volunteers.map(
+                        (volunteer) => volunteer.id
+                      )}
+                      setShowModal={setShowVolunteerModal}
+                      eventProps={event}
+                    />
+                  </div>
                 </div>
-              </div>
-            </Modal>
+              </Modal>
+            )}
           </>
         ) : (
           <LoadingSpinner className="w-full h-full flex items-center justify-center " />

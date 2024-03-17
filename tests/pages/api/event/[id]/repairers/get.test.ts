@@ -1,7 +1,7 @@
-import { clerkClient } from "@clerk/nextjs";
-import { User } from "@clerk/nextjs/server";
 import type { PageConfig } from "next";
 import { testApiHandler } from "next-test-api-route-handler";
+import { clerkClient } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/server";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { cleanup, seedTestData } from "@/../tests/utils";
@@ -78,10 +78,10 @@ describe("GET /api/event/:id/repairers", () => {
 
         const expectedRepairers = [
           {
-            userId: "Mock Repairer",
+            id: "Mock Repairer",
             firstName: "Mock",
             lastName: "Repairer",
-            email: "test@gmail.com"
+            emailAddress: "test@gmail.com"
           }
         ];
 
