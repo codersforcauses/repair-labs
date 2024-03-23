@@ -3,6 +3,7 @@ import Image from "next/image";
 import { UserResource } from "@clerk/types";
 import { Popover, Transition } from "@headlessui/react";
 import { GoCheck, GoPencil, GoX } from "react-icons/go";
+import SkillDropdown from "@/components/DropDown/skill-dropdown";
 
 import { useAuth } from "@/hooks/auth";
 
@@ -83,8 +84,8 @@ export default function ProfilePopover() {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel className="absolute top-[62px] right-5 w-80 h-96 rounded-lg bg-white z-10 shadow-custom">
-          <div className="flex flex-col items-center">
+        <Popover.Panel className="absolute top-[62px] right-5 w-80 rounded-lg bg-white z-10 shadow-custom">
+          <div className="flex flex-col items-center p-4">
             <div className="relative w-28 h-28 rounded-full my-6">
               {user?.imageUrl && (
                 <Image
@@ -106,9 +107,15 @@ export default function ProfilePopover() {
                   String(role).slice(1).toLowerCase()}
               </div>
             </div>
+            <div className="self-start w-full pl-2 mb-2 mt-4 text-sm">
+              I can repair...
+            </div>
+            <div className="w-full">
+              <SkillDropdown />
+            </div>
 
             <div
-              className={`relative mx-auto mt-5 w-72 h-24 border-2 rounded-xl ${
+              className={`relative mx-auto mt-5 w-72 h-24 border-2 rounded-md ${
                 isEdit
                   ? "border-lightAqua-200 bg-white"
                   : "border-slate-300 bg-slate-50 text-slate-500"
