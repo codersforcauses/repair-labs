@@ -37,7 +37,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={false} />
           <main className={`${inter.className}`}>
-            {/* <NavBar /> */}
             {getLayout(<Component {...pageProps} />)}
             <Toast position="bottom-center" />
           </main>

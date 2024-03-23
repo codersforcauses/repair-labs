@@ -39,7 +39,7 @@ export default function PrepopulatedRepairAttemptForm({
   const { watch, control, handleSubmit } = useForm<GeneralRepairAttempt>({
     resolver: zodResolver(updateRepairRequestSchema),
     defaultValues: {
-      item: props.itemType,
+      itemType: props.itemType,
       itemBrand: props.itemBrand,
       itemMaterial: props.itemMaterial,
       hoursWorked: Number(props.hoursWorked),
@@ -57,7 +57,7 @@ export default function PrepopulatedRepairAttemptForm({
       {/* ID, Item */}
       <div className="m-5 flex flex-wrap gap-2 max-[415px]:m-2">
         <FieldSingleSelect
-          name="item"
+          name="itemType"
           control={control}
           rules={{ required: true }}
           options={

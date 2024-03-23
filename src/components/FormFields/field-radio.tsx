@@ -13,6 +13,8 @@ export interface FormProps<T extends FieldValues = FieldValues>
   id?: string;
   label?: string;
   width?: string;
+  trueValue: string;
+  falseValue: string;
 }
 
 /*
@@ -28,6 +30,8 @@ export default function FieldRadio<T extends FieldValues = FieldValues>({
   id,
   label,
   width = "w-full",
+  trueValue,
+  falseValue,
   ...props
 }: FormProps<T>) {
   const { field, fieldState } = useController(props);
@@ -49,9 +53,9 @@ export default function FieldRadio<T extends FieldValues = FieldValues>({
           <input
             {...field}
             type="radio"
-            value="true"
+            value={trueValue}
             id={!id ? `${props.name}-y` : `${id}-y`}
-            checked={field.value == "true" ? true : false}
+            checked={field.value == trueValue ? true : false}
           />
           Yes
         </label>
@@ -60,9 +64,9 @@ export default function FieldRadio<T extends FieldValues = FieldValues>({
           <input
             {...field}
             type="radio"
-            value="false"
+            value={falseValue}
             id={!id ? `${props.name}-n` : `${id}-n`}
-            checked={field.value == "false" ? true : false}
+            checked={field.value == falseValue ? true : false}
           />
           No
         </label>

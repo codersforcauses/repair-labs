@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { RepairStatus } from "@prisma/client";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import Button from "@/components/Button";
@@ -24,11 +25,11 @@ export default function RepairAttempt() {
   const { watch, control, handleSubmit } = useForm<GeneralRepairAttempt>({
     resolver: zodResolver(updateRepairRequestSchema),
     defaultValues: {
-      item: "",
+      itemType: "",
       itemBrand: "",
       itemMaterial: "",
       hoursWorked: 1,
-      isRepaired: undefined,
+      repairStatus: undefined,
       isSparePartsNeeded: undefined,
       spareParts: "",
       repairComment: ""
@@ -54,7 +55,7 @@ export default function RepairAttempt() {
         {/* ID, Item */}
         <div className="m-5 flex flex-wrap gap-2 max-[415px]:m-2">
           <FieldInput
-            name="item"
+            name="itemType"
             control={control}
             rules={{ required: true }}
           />
@@ -86,9 +87,11 @@ export default function RepairAttempt() {
           {/* Spare parts needed?, Part(s) needed */}
           <div className="flex w-full flex-row gap-8 max-[415px]:gap-3">
             <FieldRadio
-              name="isRepaired"
+              name="repairStatus"
               control={control}
               label="Repaired?"
+              trueValue={RepairStatus.REPAIRED}
+              falseValue={RepairStatus.FAILED}
               rules={{ required: true }}
             />
 
@@ -96,6 +99,8 @@ export default function RepairAttempt() {
               name="isSparePartsNeeded"
               control={control}
               label="Spare parts needed?"
+              trueValue="true"
+              falseValue="false"
               rules={{ required: true }}
             />
           </div>

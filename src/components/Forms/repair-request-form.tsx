@@ -22,7 +22,7 @@ export default function RepairAttemptForm({
   const { watch, control, handleSubmit } = useForm<GeneralRepairAttempt>({
     resolver: zodResolver(updateRepairRequestSchema),
     defaultValues: {
-      item: "",
+      itemType: "",
       itemBrand: "",
       itemMaterial: "",
       hoursWorked: undefined,
@@ -80,7 +80,7 @@ export default function RepairAttemptForm({
       {/* ID, Item */}
       <div className="m-5 flex flex-wrap gap-2 max-[415px]:m-2">
         <FieldSingleSelect
-          name="item"
+          name="itemType"
           control={control}
           rules={{ required: true }}
           options={actualItemTypes}

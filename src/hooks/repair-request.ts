@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
 import { httpClient } from "@/lib/base-http-client";
-import { CreateRepairRequest, GeneralRepairAttempt } from "@/types";
+import {
+  CreateRepairRequest,
+  GeneralRepairAttempt,
+  RepairRequest
+} from "@/types";
 
 export const useRepairRequests = () => {
   const queryFn = async () => {
@@ -15,6 +19,20 @@ export const useRepairRequests = () => {
   return useQuery({
     queryKey: ["repair-requests"],
     queryFn
+  });
+};
+
+export const useRepairRequest = (id: string | undefined) => {
+  const queryFn = async () => {
+    const url = `/repair-request/${id}`;
+    const response = await httpClient.get<RepairRequest>(url);
+    return response.data;
+  };
+
+  return useQuery({
+    queryKey: [id],
+    queryFn,
+    enabled: !!id
   });
 };
 

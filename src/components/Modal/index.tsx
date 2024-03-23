@@ -66,7 +66,7 @@ const Modal = ({
                     ""
                   )}
 
-                  <div>{children}</div>
+                  {children}
                   <button
                     onClick={() => setShowPopup(false)}
                     className="absolute right-2 top-2 rounded-lg p-1 hover:bg-gray-50"

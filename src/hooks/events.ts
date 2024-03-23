@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 
 import { httpClient } from "@/lib/base-http-client";
 import { PaginationOptions, PaginationResponse } from "@/lib/pagination";
+import { EventRepairer } from "@/pages/api/event/[id]/repairers";
 import {
   CreateEvent,
   EventResponse,
@@ -145,5 +146,20 @@ export const useRepairRequests = (params: {
         })
         .then((response) => response.data),
     enabled: params.eventId != undefined
+  });
+};
+
+export const useRepairers = (eventId: string | undefined) => {
+  const queryFn = async () => {
+    const url = `event/${eventId}/repairers`;
+
+    const response = await httpClient.get<EventRepairer[]>(url);
+    return response.data;
+  };
+
+  return useQuery({
+    queryKey: ["repairers", eventId],
+    queryFn,
+    enabled: !!eventId
   });
 };

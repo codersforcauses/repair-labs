@@ -1,7 +1,7 @@
-import { clerkClient } from "@clerk/nextjs";
-import { User } from "@clerk/nextjs/server";
 import type { PageConfig } from "next";
 import { testApiHandler } from "next-test-api-route-handler";
+import { clerkClient } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/server";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { cleanup, seedTestData } from "@/../tests/utils";
@@ -37,6 +37,19 @@ describe("GET /api/event/:id/repairers", () => {
       }
     });
 
+    await prisma.repairRequest.create({
+      data: {
+        id: "c3f5ed50-19a2-11ee-be56-0242ac120003",
+        eventId: "acf5ed50-19a2-11ee-be56-0242ac120003",
+        description: "Test Laptop repair event.",
+        itemType: "Laptop",
+        itemBrand: "Dell",
+        status: "ACCEPTED",
+        assignedTo: "Mock Repairer",
+        createdBy: "Mock Client"
+      }
+    });
+
     vi.mock("@clerk/nextjs/server", async () => {
       return {
         getAuth: vi.fn().mockReturnValue({ userId: "Mock Repairer" })
@@ -51,6 +64,7 @@ describe("GET /api/event/:id/repairers", () => {
           id: "Mock Repairer",
           firstName: "Mock",
           lastName: "Repairer",
+          imageUrl: "https://example.com/image.jpg",
           emailAddresses: [
             {
               emailAddress: "test@gmail.com"
@@ -81,7 +95,9 @@ describe("GET /api/event/:id/repairers", () => {
             userId: "Mock Repairer",
             firstName: "Mock",
             lastName: "Repairer",
-            email: "test@gmail.com"
+            email: "test@gmail.com",
+            avatar: "https://example.com/image.jpg",
+            acceptedTasksCount: 1
           }
         ];
 

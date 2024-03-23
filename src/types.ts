@@ -49,6 +49,7 @@ export interface User {
   lastName: string | null;
   emailAddress: string;
   role: UserRole;
+  imageUrl?: string;
 }
 
 export enum SearchCriteria {

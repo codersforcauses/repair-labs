@@ -130,7 +130,12 @@ export default function RepairRequestCard({
           <AssigneeBadge
             firstName={repairRequestProps.assignedTo?.firstName || "Unassigned"}
             lastName={repairRequestProps.assignedTo?.lastName || ""}
-            avatar="/images/repair_lab_logo.jpg"
+            avatar={
+              repairRequestProps.assignedTo?.imageUrl ||
+              "/images/repair_lab_logo.jpg"
+            }
+            assignedTo={repairRequestProps.assignedTo?.id}
+            repairRequestId={repairRequestProps.id}
           />
         </div>
         <div>

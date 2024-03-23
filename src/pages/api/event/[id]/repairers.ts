@@ -1,6 +1,7 @@
-import { HttpStatusCode } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "next/dist/server/api-utils";
+import { RepairStatus } from "@prisma/client";
+import { HttpStatusCode } from "axios";
 import { z } from "zod";
 
 import apiHandler from "@/lib/api-handler";
@@ -66,6 +67,15 @@ async function getRepairers(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json(result);
 }
 
+export type EventRepairer = {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar: string;
+  acceptedTasksCount: number;
+};
+
 async function getEventRepairers(id: string) {
   // get repairers from table EventRepairer
   const eventRepairer = await prisma.eventRepairer.findMany({
@@ -78,23 +88,37 @@ async function getEventRepairers(id: string) {
 
   const userIds = eventRepairer.map((repairer) => repairer.userId);
 
-  // get additional informations like firstName, lastName, email
+  // get additional informations like firstName, lastName, email, avatar
   const repairersUsers: Partial<Record<string, User>> =
     await userService.getUserMapFromIds(userIds);
+
+  // Prepare to fetch accepted task counts in parallel
+  const countsPromises = userIds.map((userId) =>
+    prisma.repairRequest.count({
+      where: {
+        assignedTo: userId,
+        status: RepairStatus.ACCEPTED
+      }
+    })
+  );
+
+  const counts = await Promise.all(countsPromises);
 
   /* eslint-disable no-console */
   if (Object.keys(repairersUsers).length !== userIds.length) {
     console.error("Mismatch in users from clerk and database");
   }
 
-  return userIds.map((userId) => {
+  return userIds.map((userId, index) => {
     const userData = repairersUsers[userId];
 
     return {
       userId: userId,
       firstName: userData?.firstName,
       lastName: userData?.lastName,
-      email: userData?.emailAddress
-    };
+      email: userData?.emailAddress,
+      avatar: userData?.imageUrl,
+      acceptedTasksCount: counts[index]
+    } as EventRepairer;
   });
 }
